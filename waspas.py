@@ -1,4 +1,5 @@
 import pandas as pd
+from models.players import Player
 
 def WASPAS(data, weights, lambda_):
     """
@@ -12,9 +13,10 @@ def WASPAS(data, weights, lambda_):
     Returns:
         A pandas DataFrame with player rankings based on the WASPAS score.
     """
-
     # Normalize the data (min-max normalization)
-    normalized_data = (data - data.min()) / (data.max() - data.min())
+    numeric_cols = data.select_dtypes(include=['number']).columns
+    df_numeric = data[numeric_cols]
+    normalized_data = (df_numeric - df_numeric.min()) / (df_numeric.max() - df_numeric.min())
 
     # Calculate the weighted sum (WS)
     ws = normalized_data.mul(weights, axis=1).sum(axis=1)
@@ -32,15 +34,14 @@ def WASPAS(data, weights, lambda_):
 
     return ranked_data
 
-# Sample player data
-data = {'Player': ['Player A', 'Player B', 'Player C'],
-        'Skill': [80, 75, 90],
-        'Pace': [90, 85, 80],
-        'Strength': [70, 80, 75],
-        'Age': [25, 28, 23],
-        'Cost': [20, 30, 25]}
 
-df = pd.DataFrame(data)
+players = Player.select()
+player_data = [
+    (player.name, player.skill, player.pace, player.strength, player.age, player.cost)
+    for player in players
+]
+
+data = pd.DataFrame(player_data, columns=['Name', 'Skill', 'Pace', 'Strength', 'Age', 'Cost'])
 
 # Assign weights to criteria
 weights = {'Skill': 0.3, 'Pace': 0.2, 'Strength': 0.15, 'Age': 0.15, 'Cost': 0.2}
@@ -49,6 +50,5 @@ weights = {'Skill': 0.3, 'Pace': 0.2, 'Strength': 0.15, 'Age': 0.15, 'Cost': 0.2
 lambda_ = 0.5
 
 # Apply WASPAS
-ranked_df = WASPAS(df, weights, lambda_)
-
-print(ranked_df)
+ranked_df = WASPAS(data, weights, lambda_)
+print(ranked_df.head(5))
