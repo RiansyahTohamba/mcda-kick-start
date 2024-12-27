@@ -12,3 +12,7 @@ class Player(Model):
 
     class Meta:
         database = db
+
+
+# Create the table if it doesn't exist
+db.create_tables([Player], safe=True)
