@@ -1,7 +1,11 @@
 import pandas as pd
 from models.players import Player
 
-def WASPAS(data, weights, lambda_):
+class WaspasScoring:
+    def __init__(self):
+        pass
+    
+    def count_rank(self, data, weights, lambda_):
         """
         WASPAS method for football player transfer decision-making.
 
@@ -33,24 +37,26 @@ def WASPAS(data, weights, lambda_):
         ranked_data = ranked_data.sort_values(by='WASPAS_Score', ascending=False)
 
         return ranked_data
+    
+    def get_top_five(self):
+        players = Player.select()
+        player_data = [
+            (player.name, player.skill, player.pace, player.strength, player.age, player.cost)
+            for player in players
+        ]
 
-def get_top_five():
-    players = Player.select()
-    player_data = [
-        (player.name, player.skill, player.pace, player.strength, player.age, player.cost)
-        for player in players
-    ]
+        data = pd.DataFrame(player_data, columns=['Name', 'Skill', 'Pace', 'Strength', 'Age', 'Cost'])
 
-    data = pd.DataFrame(player_data, columns=['Name', 'Skill', 'Pace', 'Strength', 'Age', 'Cost'])
+        # Assign weights to criteria
+        weights = {'Skill': 0.3, 'Pace': 0.2, 'Strength': 0.15, 'Age': 0.15, 'Cost': 0.2}
 
-    # Assign weights to criteria
-    weights = {'Skill': 0.3, 'Pace': 0.2, 'Strength': 0.15, 'Age': 0.15, 'Cost': 0.2}
+        # Set the weighting coefficient (lambda)
+        lambda_ = 0.5
 
-    # Set the weighting coefficient (lambda)
-    lambda_ = 0.5
+        # Apply WASPAS
+        ranked_df = self.count_rank(data, weights, lambda_)
+        print(ranked_df.head(5))
 
-    # Apply WASPAS
-    ranked_df = WASPAS(data, weights, lambda_)
-    print(ranked_df.head(5))
 
-get_top_five()
+waspas = WaspasScoring()
+waspas.get_top_five()
