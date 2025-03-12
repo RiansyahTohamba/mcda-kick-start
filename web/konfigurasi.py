@@ -3,6 +3,11 @@ import yaml
 class Konfigurasi():
     YML_FILE = "config.yml"
 
+    kuota = 0
+    
+    def set_kuota(self,kuota):
+        self.kuota = kuota
+
     def read_yaml(self):
         with open(self.YML_FILE, "r") as file:
             return yaml.safe_load(file)

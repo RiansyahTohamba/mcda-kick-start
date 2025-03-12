@@ -1,2 +1,5 @@
 batasan_lain: '300'
 kuota: 200
+# kapan diubah? -> updated_at
+# siapa yang ubah? -> admin_id
+# admin -> mengatur -> konfigurasi
